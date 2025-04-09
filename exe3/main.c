@@ -36,31 +36,25 @@ void process_task(void *p) {
 
     while (true) {
         if (xQueueReceive(xQueueData, &data, 100)) {
-            // Atualiza a janela
-            // Primeiro, subtrai o valor que está sendo descartado
-            sum -= window[index];
-            
-            // Armazena o novo dado na posição corrente da janela
-            window[index] = data;
-            
-            // Adiciona o novo dado à soma
-            sum += data;
-            
-            // Se ainda não tiver preenchido completamente a janela, incrementa o contador
-            if (count < WINDOW_SIZE) {
+            // Atualiza a soma: remove o valor mais antigo e adiciona o novo
+            if (count == WINDOW_SIZE) {
+                sum = sum - window[index] + data;
+            } else {
+                sum = sum + data;
                 count++;
             }
-
-            // Calcula a média móvel: divide a soma pelo número de amostras válidas
-            average =  sum / count;
             
-            // Imprime o valor do sinal e o sinal filtrado
-            // printf("Valor do sinal: %d\n", data);
+            // Armazena o novo valor na janela
+            window[index] = data;
+            
+            // Calcula a média
+            average = sum / count;
+            
+            // Imprime o valor filtrado
             printf("%d\n", average);
-
-            // Avança para o próximo índice (janela circular)
+            
+            // Atualiza o índice para a próxima posição na janela circular
             index = (index + 1) % WINDOW_SIZE;
-
            
             // deixar esse delay!
             vTaskDelay(pdMS_TO_TICKS(50));
