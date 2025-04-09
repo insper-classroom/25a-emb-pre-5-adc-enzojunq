@@ -7,6 +7,9 @@
 #include <stdio.h>
 
 #include "data.h"
+
+#define WINDOW_SIZE 5  // Tamanho da janela para a média móvel
+
 QueueHandle_t xQueueData;
 
 // não mexer! Alimenta a fila com os dados do sinal
@@ -25,14 +28,40 @@ void data_task(void *p) {
 
 void process_task(void *p) {
     int data = 0;
+    int window[WINDOW_SIZE] = {0};  // Armazena as últimas WINDOW_SIZE amostras
+    int index = 0;                  // Índice para posição na janela circular
+    int count = 0;                  // Quantidade de amostras válidas (até WINDOW_SIZE)
+    int sum = 0;                    // Soma das amostras armazenadas
+    float average = 0;
 
     while (true) {
         if (xQueueReceive(xQueueData, &data, 100)) {
-            // implementar filtro aqui!
+            // Atualiza a janela
+            // Primeiro, subtrai o valor que está sendo descartado
+            sum -= window[index];
+            
+            // Armazena o novo dado na posição corrente da janela
+            window[index] = data;
+            
+            // Adiciona o novo dado à soma
+            sum += data;
+            
+            // Se ainda não tiver preenchido completamente a janela, incrementa o contador
+            if (count < WINDOW_SIZE) {
+                count++;
+            }
 
+            // Calcula a média móvel: divide a soma pelo número de amostras válidas
+            average = (float) sum / count;
+            
+            // Imprime o valor do sinal e o sinal filtrado
+            printf("Valor do sinal: %d\n", data);
+            printf("Valor do sinal filtrado: %f\n", average);
 
+            // Avança para o próximo índice (janela circular)
+            index = (index + 1) % WINDOW_SIZE;
 
-
+           
             // deixar esse delay!
             vTaskDelay(pdMS_TO_TICKS(50));
         }
