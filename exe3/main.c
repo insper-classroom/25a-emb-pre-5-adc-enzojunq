@@ -47,11 +47,12 @@ void process_task(void *p) {
             // Armazena o novo valor na janela
             window[index] = data;
             
-            // Calcula a média
-            average = sum / count;
+            // Calcula a média - sempre dividindo por WINDOW_SIZE (5)
+            average = sum / WINDOW_SIZE;
             
             // Imprime o valor filtrado
             printf("%d\n", average);
+            
             
             // Atualiza o índice para a próxima posição na janela circular
             index = (index + 1) % WINDOW_SIZE;
