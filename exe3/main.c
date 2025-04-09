@@ -32,7 +32,7 @@ void process_task(void *p) {
     int index = 0;                  // Índice para posição na janela circular
     int count = 0;                  // Quantidade de amostras válidas (até WINDOW_SIZE)
     int sum = 0;                    // Soma das amostras armazenadas
-    float average = 0;
+    int average = 0;
 
     while (true) {
         if (xQueueReceive(xQueueData, &data, 100)) {
@@ -52,11 +52,11 @@ void process_task(void *p) {
             }
 
             // Calcula a média móvel: divide a soma pelo número de amostras válidas
-            average = (float) sum / count;
+            average =  sum / count;
             
             // Imprime o valor do sinal e o sinal filtrado
-            printf("Valor do sinal: %d\n", data);
-            printf("Valor do sinal filtrado: %f\n", average);
+            // printf("Valor do sinal: %d\n", data);
+            printf("%d\n", average);
 
             // Avança para o próximo índice (janela circular)
             index = (index + 1) % WINDOW_SIZE;
